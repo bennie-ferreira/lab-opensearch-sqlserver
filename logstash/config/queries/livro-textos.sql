@@ -1,0 +1,1 @@
+select * from acervo_machado_de_assis;

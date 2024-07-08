@@ -1,0 +1,2 @@
+- pipeline.id: pipeline-livro-textos
+  path.config: "/usr/share/logstash/pipeline/pipeline-livro-textos.conf"

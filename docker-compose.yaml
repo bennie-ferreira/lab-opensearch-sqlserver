@@ -1,0 +1,103 @@
+services:
+  # Banco de dados sql server
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      SA_PASSWORD: "${databasePassword}"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+  # Script python extrair
+  extrator:
+    container_name: extrator-python
+    build:
+      context: extrator-python
+      dockerfile: Dockerfile
+    volumes:
+      - ./extrator-python/:/app/
+    depends_on:
+      - sqlserver
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+  # opensearch:
+  #   image: opensearchproject/opensearch
+  #   container_name: opensearch
+  #   environment:
+  #     - cluster.name=opensearch-cluster
+  #     - node.name=opensearch
+  #     - discovery.seed_hosts=opensearch
+  #     - cluster.initial_cluster_manager_nodes=opensearch
+  #     - bootstrap.memory_lock=true
+  #     - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+  #     - "DISABLE_SECURITY_PLUGIN=true"
+  #     - "DISABLE_INSTALL_DEMO_CONFIG=true"
+  #   ulimits:
+  #     memlock:
+  #       soft: -1
+  #       hard: -1
+  #     nofile:
+  #       soft: 65536
+  #       hard: 65536
+  #   ports:
+  #     - published: 9200
+  #       target: 9200
+  #   volumes:
+  #     - opensearch:/usr/share/opensearch/data
+
+  # opensearch-dashboards:
+  #   image: opensearchproject/opensearch-dashboards
+  #   container_name: opensearch-dashboards
+  #   ports:
+  #     - published: 8094
+  #       target: 5601
+  #   expose:
+  #     - "8095"
+  #   environment:
+  #     - 'OPENSEARCH_HOSTS=["http://opensearch:9200"]'
+  #     - "DISABLE_SECURITY_DASHBOARDS_PLUGIN=true"
+  #   depends_on:
+  #     - opensearch
+
+  # logstash:
+  #   container_name: logstash
+  #   build:
+  #     context: logstash
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - published: 5601
+  #       target: 5601
+  #     - published: 1433
+  #       target: 1433
+  #     - published: 5044
+  #       target: 5044
+  #     - published: 5000
+  #       target: 5000
+  #       protocol: udp
+  #   depends_on:
+  #     - opensearch
+  #     - opensearch-dashboards
+  #     - sqlserver
+  #   volumes:
+  #     - ./logstash/pipeline/:/usr/share/logstash/pipeline/
+  #     - ./logstash/config/queries/:/usr/share/logstash/config/queries/
+  #     - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
+  #     - ./logstash/config/pipelines.yml:/usr/share/logstash/config/pipelines.yml
+  #   env_file:
+  #     - .env
+
+volumes:
+  # opensearch:
+  sqlserver:
+
+networks:
+  app-network:
+    driver: bridge
