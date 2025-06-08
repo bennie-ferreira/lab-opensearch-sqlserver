@@ -1,5 +1,7 @@
 package com.opensearch.opensearch_spring.controller;
 
+import com.opensearch.opensearch_spring.model.Livro;
+import com.opensearch.opensearch_spring.repository.LivroRepository;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch._types.FieldValue;
 import org.opensearch.client.opensearch.core.SearchRequest;
@@ -8,6 +10,8 @@ import org.opensearch.client.opensearch.core.search.Hit;
 import org.opensearch.client.opensearch.core.search.HitsMetadata;
 import org.opensearch.client.opensearch._types.query_dsl.MatchQuery;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +23,9 @@ import java.util.List;
 public class SearchDefault {
 
     private final OpenSearchClient client;
+
+    @Autowired
+    private LivroRepository livroRepository;
 
     @Autowired
     public SearchDefault(OpenSearchClient client) {
@@ -50,4 +57,26 @@ public class SearchDefault {
             return "Error: " + e.getMessage();
         }
     }
+
+    @GetMapping("/livros")
+    public List<Livro> procurarLivros(){
+        return livroRepository.findByTitulo("Dom Casmurro");
+    }
+
+    @GetMapping("/todos-livros")
+    public Iterable<Livro> listarLivros(){
+        return livroRepository.findAll();
+    }
+
+    @QueryMapping
+    public List<Livro> livrosPorTitulo(@Argument String titulo) {
+        return livroRepository.findByTitulo(titulo);
+    }
+
+    @QueryMapping
+    public Iterable<Livro> todosLivros() {
+        return livroRepository.findAll();
+    }
+
+
 }

@@ -1,0 +1,10 @@
+type Livro {
+  id: ID!
+  titulo: String
+  autor: String
+}
+
+type Query {
+  livrosPorTitulo(titulo: String!): [Livro]
+  todosLivros: [Livro]
+}

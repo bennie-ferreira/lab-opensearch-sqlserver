@@ -5,7 +5,6 @@ import org.opensearch.client.RestClient;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.transport.OpenSearchTransport;
 import org.opensearch.client.transport.rest_client.RestClientTransport;
-import org.opensearch.client.transport.rest_client.RestClientOptions;
 import org.opensearch.client.json.jackson.JacksonJsonpMapper;
 import org.apache.http.HttpHost;
 import org.springframework.context.annotation.Bean;
